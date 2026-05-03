@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music Player</title>
+  <meta charset="UTF-8">
+  <title>Music Player</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-<style>
+<div class="player">
+  <h2 id="title">Song Title</h2>
+  <h4 id="artist">Artist</h4>
+
+  <audio id="audio"></audio>
+
+  <!-- Progress -->
+  <input type="range" id="progress" value="0">
+
+  <div class="time">
+    <span id="current">0:00</span> /
+    <span id="duration">0:00</span>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button onclick="prevSong()">⏮</button>
+    <button onclick="playPause()">▶</button>
+    <button onclick="nextSong()">⏭</button>
+  </div>
+
+  <!-- Volume -->
+  <input type="range" id="volume" min="0" max="1" step="0.01">
+
+  <!-- Playlist -->
+  <div id="playlist"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
 body {
   font-family: Arial;
   background: linear-gradient(135deg, #1e1e2f, #3a3a5a);
@@ -24,84 +56,37 @@ body {
   text-align: center;
 }
 
-h2, h4 {
-  margin: 5px;
-}
-
-/* Controls */
 .controls button {
   margin: 10px;
   padding: 10px;
   font-size: 18px;
-  border: none;
   border-radius: 50%;
+  border: none;
   cursor: pointer;
 }
 
-/* Progress bar */
-.progress {
+input[type="range"] {
   width: 100%;
   margin: 10px 0;
 }
 
-.volume {
-  width: 100%;
+#playlist div {
+  cursor: pointer;
+  padding: 5px;
 }
-</style>
-</head>
 
-<body>
-
-<div class="player">
-  <h2 id="title">Song Title</h2>
-  <h4 id="artist">Artist</h4>
-
-  <audio id="audio"></audio>
-
-  <!-- Progress -->
-  <input type="range" id="progress" class="progress" value="0">
-
-  <div>
-    <span id="current">0:00</span> /
-    <span id="duration">0:00</span>
-  </div>
-
-  <!-- Controls -->
-  <div class="controls">
-    <button onclick="prevSong()">⏮</button>
-    <button onclick="playPause()">▶</button>
-    <button onclick="nextSong()">⏭</button>
-  </div>
-
-  <!-- Volume -->
-  <input type="range" id="volume" class="volume" min="0" max="1" step="0.01">
-
-  <!-- Playlist -->
-  <div id="playlist"></div>
-</div>
-
-<script>
+#playlist div:hover {
+  background: #444;
+} 
 const songs = [
-  {
-    title: "Song 1",
-    artist: "Artist 1",
-    src: "song1.mp3"
-  },
-  {
-    title: "Song 2",
-    artist: "Artist 2",
-    src: "song2.mp3"
-  },
-  {
-    title: "Song 3",
-    artist: "Artist 3",
-    src: "song3.mp3"
-  }
+  { title: "Song 1", artist: "Artist 1", src: "songs/song1.mp3" },
+  { title: "Song 2", artist: "Artist 2", src: "songs/song2.mp3" },
+  { title: "Song 3", artist: "Artist 3", src: "songs/song3.mp3" }
 ];
 
 let index = 0;
-const audio = document.getElementById("audio");
 
+const audio = document.getElementById("audio");
 const title = document.getElementById("title");
 const artist = document.getElementById("artist");
 const progress = document.getElementById("progress");
@@ -110,21 +95,18 @@ const duration = document.getElementById("duration");
 const volume = document.getElementById("volume");
 const playlistDiv = document.getElementById("playlist");
 
-/* Load Song */
+/* Load song */
 function loadSong(i) {
-  let song = songs[i];
+  const song = songs[i];
   title.innerText = song.title;
   artist.innerText = song.artist;
   audio.src = song.src;
 }
 
-/* Play/Pause */
+/* Play / Pause */
 function playPause() {
-  if (audio.paused) {
-    audio.play();
-  } else {
-    audio.pause();
-  }
+  if (audio.paused) audio.play();
+  else audio.pause();
 }
 
 /* Next */
@@ -141,10 +123,9 @@ function prevSong() {
   audio.play();
 }
 
-/* Update Progress */
+/* Update progress */
 audio.addEventListener("timeupdate", () => {
   progress.value = (audio.currentTime / audio.duration) * 100 || 0;
-
   current.innerText = formatTime(audio.currentTime);
   duration.innerText = formatTime(audio.duration);
 });
@@ -166,16 +147,15 @@ function formatTime(time) {
   return min + ":" + (sec < 10 ? "0" + sec : sec);
 }
 
-/* Autoplay next song */
+/* Autoplay */
 audio.addEventListener("ended", nextSong);
 
-/* Playlist UI */
+/* Playlist */
 function loadPlaylist() {
   playlistDiv.innerHTML = "";
   songs.forEach((song, i) => {
     let div = document.createElement("div");
     div.innerText = song.title;
-    div.style.cursor = "pointer";
     div.onclick = () => {
       index = i;
       loadSong(index);
@@ -190,7 +170,3 @@ loadSong(index);
 loadPlaylist();
 volume.value = 0.5;
 audio.volume = 0.5;
-</script>
-
-</body>
-</html>
